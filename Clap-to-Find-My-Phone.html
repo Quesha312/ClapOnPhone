@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script data-cochat-failure-overlay="true">
+(function () {
+  function show(msg) {
+    var el = document.getElementById('cc-fail');
+    if (!el) {
+      el = document.createElement('div'); el.id = 'cc-fail';
+      el.style.cssText = 'position:fixed;inset:12px;z-index:2147483647;background:#fff;'
+        + 'border:1px solid #d4d4d8;border-radius:12px;padding:20px;overflow:auto;'
+        + 'font-family:system-ui,-apple-system,sans-serif;color:#27272a;'
+        + 'box-shadow:0 4px 16px rgba(0,0,0,.08)';
+      el.innerHTML = '<h2 style="margin:0 0 6px;font-size:16px;font-weight:600">'
+        + 'This app stopped running</h2>'
+        + '<p style="margin:0 0 12px;font-size:14px;color:#52525b">'
+        + 'Share the details below in the chat and the assistant can fix it.</p>'
+        + '<pre style="white-space:pre-wrap;background:#f4f4f5;border:1px solid #e4e4e7;'
+        + 'padding:10px;border-radius:8px;font-size:12px;line-height:1.5;margin:0"></pre>';
+      (document.body || document.documentElement).appendChild(el);
+    }
+    el.querySelector('pre').textContent += msg + '\n';
+  }
+  window.__ccFail = show;
+  window.addEventListener('error', function (e) {
+    if (e.target && (e.target.src || e.target.href)) {
+      show('Could not load: ' + (e.target.src || e.target.href));
+    } else {
+      show((e.message || 'Unknown error') + (e.lineno ? ' (line ' + e.lineno + ')' : ''));
+    }
+  }, true);
+  window.addEventListener('unhandledrejection', function (e) {
+    show('Promise error: ' + (e.reason && e.reason.message ? e.reason.message : e.reason));
+  });
+})();
+</script>
+<style data-cochat-base="true">
+/*
+ * CoChat artifact base theme.
+ *
+ * Inlined by `html_document.py:_artifact_renderer` into every HTML artifact's
+ * <head>. The variables are always defined (harmless), the opinionated styles
+ * are gated under `.cochat-base` so they only apply when the LLM opts in by
+ * adding ``class="cochat-base"`` to <body>.
+ *
+ * Sources of truth (kept in sync with):
+ *   src/app.css        — the `.cochat-artifact`-scoped --cc-* tokens
+ *   tailwind.config.js — the cochat color scale
+ *
+ * Dark mode contract:
+ *   The parent posts {type:'darkMode', dark} on iframe load and toggles
+ *   `html.dark` via the listener injected by `_artifact_renderer`. We key the
+ *   dark variables off `html.dark` (authoritative), plus a `prefers-color-
+ *   scheme` fallback for the standalone /artifacts/[id] viewer and the brief
+ *   pre-postMessage window.
+ */
+
+:root {
+    /* Brand */
+    --cc-primary: #811a71;
+    --cc-primary-light: #9e3d8e;
+    --cc-primary-dark: #5e1252;
+    --cc-primary-subtle: rgba(129, 26, 113, 0.08);
+    --cc-secondary: #450077;
+    --cc-accent: #0ea371;
+    --cc-accent-light: #12c98a;
+    --cc-accent-subtle: rgba(14, 163, 113, 0.1);
+
+    /* Neutrals */
+    --cc-gray-50: #f9fafb;
+    --cc-gray-100: #f3f4f6;
+    --cc-gray-200: #e5e7eb;
+    --cc-gray-300: #d1d5db;
+    --cc-gray-400: #9ca3af;
+    --cc-gray-500: #6b7280;
+    --cc-gray-600: #4b5563;
+    --cc-gray-700: #374151;
+    --cc-gray-800: #1f2937;
+    --cc-gray-900: #111827;
+
+    /* Surfaces & text */
+    --cc-surface: #ffffff;
+    --cc-surface-soft: #fafafa;
+    --cc-surface-muted: #f3f4f6;
+    --cc-border: #e5e7eb;
+    --cc-border-strong: #d1d5db;
+    --cc-text: #111827;
+    --cc-text-soft: #4b5563;
+    --cc-text-muted: #6b7280;
+
+    /* Semantic */
+    --cc-success: #16a34a;
+    --cc-warning: #d97706;
+    --cc-danger: #dc2626;
+    --cc-info: #2563eb;
+
+    /* Radius */
+    --cc-radius-xs: 4px;
+    --cc-radius-sm: 6px;
+    --cc-radius-md: 8px;
+    --cc-radius-lg: 12px;
+    --cc-radius-xl: 16px;
+    --cc-radius-pill: 999px;
+
+    /* Shadows */
+    --cc-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --cc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --cc-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --cc-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --cc-shadow-focus: 0 0 0 3px rgba(129, 26, 113, 0.25);
+
+    /* Typography */
+    --cc-font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+        'Helvetica Neue', Arial, sans-serif;
+    --cc-font-mono: ui-monospace, SFMono-Regular, 'JetBrains Mono', Menlo,
+        Consolas, monospace;
+}
+
+/* Dark mode — authoritative, driven by parent's html.dark toggle */
+html.dark {
+    --cc-primary: #d43ea6;
+    --cc-primary-light: #e87bc5;
+    --cc-primary-dark: #811a71;
+    --cc-primary-subtle: rgba(212, 62, 166, 0.14);
+    --cc-secondary: #9e3d8e;
+    --cc-accent: #12c98a;
+    --cc-accent-light: #34d399;
+    --cc-accent-subtle: rgba(18, 201, 138, 0.14);
+
+    --cc-gray-50: #171717;
+    --cc-gray-100: #262626;
+    --cc-gray-200: #333333;
+    --cc-gray-300: #4e4e4e;
+    --cc-gray-400: #676767;
+    --cc-gray-500: #9b9b9b;
+    --cc-gray-600: #b4b4b4;
+    --cc-gray-700: #cdcdcd;
+    --cc-gray-800: #ececec;
+    --cc-gray-900: #f9f9f9;
+
+    --cc-surface: #262626;
+    --cc-surface-soft: #1f1f1f;
+    --cc-surface-muted: #333333;
+    --cc-border: #2a2a2a;
+    --cc-border-strong: #4e4e4e;
+    --cc-text: #eeeeee;
+    --cc-text-soft: #cdcdcd;
+    --cc-text-muted: #9b9b9b;
+
+    --cc-success: #4ade80;
+    --cc-warning: #fbbf24;
+    --cc-danger: #f87171;
+    --cc-info: #60a5fa;
+
+    --cc-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --cc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+    --cc-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --cc-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --cc-shadow-focus: 0 0 0 3px rgba(212, 62, 166, 0.35);
+}
+
+/*
+ * System-preference fallback for contexts where the parent hasn't (yet)
+ * posted darkMode — e.g. the standalone /artifacts/[id] viewer or the
+ * first paint before the load handler fires. `html.light` (if ever set)
+ * pins light; `html.dark` (above) pins dark and wins via specificity.
+ */
+@media (prefers-color-scheme: dark) {
+    :root:not(.light):not(.dark) {
+        --cc-primary: #d43ea6;
+        --cc-primary-light: #e87bc5;
+        --cc-primary-dark: #811a71;
+        --cc-primary-subtle: rgba(212, 62, 166, 0.14);
+        --cc-secondary: #9e3d8e;
+        --cc-accent: #12c98a;
+        --cc-accent-light: #34d399;
+        --cc-accent-subtle: rgba(18, 201, 138, 0.14);
+
+        --cc-gray-50: #171717;
+        --cc-gray-100: #262626;
+        --cc-gray-200: #333333;
+        --cc-gray-300: #4e4e4e;
+        --cc-gray-400: #676767;
+        --cc-gray-500: #9b9b9b;
+        --cc-gray-600: #b4b4b4;
+        --cc-gray-700: #cdcdcd;
+        --cc-gray-800: #ececec;
+        --cc-gray-900: #f9f9f9;
+
+        --cc-surface: #262626;
+        --cc-surface-soft: #1f1f1f;
+        --cc-surface-muted: #333333;
+        --cc-border: #2a2a2a;
+        --cc-border-strong: #4e4e4e;
+        --cc-text: #eeeeee;
+        --cc-text-soft: #cdcdcd;
+        --cc-text-muted: #9b9b9b;
+
+        --cc-success: #4ade80;
+        --cc-warning: #fbbf24;
+        --cc-danger: #f87171;
+        --cc-info: #60a5fa;
+    }
+}
+
+/* ============================================================ *
+ *  Opt-in opinionated styles                                   *
+ *  Apply ONLY when <body class="cochat-base"> is present.      *
+ *  Without the class, only the CSS variables above exist —     *
+ *  zero visual effect on styled mockups.                       *
+ * ============================================================ */
+
+.cochat-base,
+.cochat-base *,
+.cochat-base *::before,
+.cochat-base *::after {
+    box-sizing: border-box;
+}
+
+.cochat-base {
+    margin: 0;
+    background: var(--cc-surface);
+    color: var(--cc-text);
+    font-family: var(--cc-font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    accent-color: var(--cc-primary);
+}
+
+/* Headings */
+.cochat-base h1,
+.cochat-base h2,
+.cochat-base h3,
+.cochat-base h4,
+.cochat-base h5,
+.cochat-base h6 {
+    margin: 0 0 0.5em;
+    color: var(--cc-text);
+    font-weight: 600;
+    line-height: 1.25;
+}
+.cochat-base h1 { font-size: 1.5rem; }
+.cochat-base h2 { font-size: 1.25rem; }
+.cochat-base h3 { font-size: 1.125rem; }
+.cochat-base h4 { font-size: 1rem; }
+
+.cochat-base p { margin: 0 0 0.75em; }
+.cochat-base small { color: var(--cc-text-muted); font-size: 0.875em; }
+
+/* Links */
+.cochat-base a {
+    color: var(--cc-primary);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+.cochat-base a:hover { color: var(--cc-primary-light); text-decoration: underline; }
+
+/* Horizontal rule */
+.cochat-base hr {
+    border: 0;
+    border-top: 1px solid var(--cc-border);
+    margin: 1rem 0;
+}
+
+/* Buttons */
+.cochat-base .cc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--cc-border-strong);
+    border-radius: var(--cc-radius-md);
+    background: var(--cc-surface-soft);
+    color: var(--cc-text);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+.cochat-base .cc-btn:hover { background: var(--cc-surface-muted); border-color: var(--cc-primary); }
+.cochat-base .cc-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.cochat-base .cc-btn-primary {
+    background: var(--cc-primary);
+    border-color: var(--cc-primary);
+    color: #fff;
+}
+.cochat-base .cc-btn-primary:hover {
+    background: var(--cc-primary-light);
+    border-color: var(--cc-primary-light);
+    color: #fff;
+}
+
+.cochat-base .cc-btn-ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--cc-text-soft);
+}
+.cochat-base .cc-btn-ghost:hover {
+    background: var(--cc-primary-subtle);
+    color: var(--cc-primary);
+}
+
+/* Cards & panels */
+.cochat-base .cc-card {
+    background: var(--cc-surface);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-lg);
+    padding: 1rem;
+    box-shadow: var(--cc-shadow-sm);
+}
+.cochat-base .cc-panel {
+    background: var(--cc-surface-soft);
+    border: 1px solid var(--cc-border);
+    border-radius: var(--cc-radius-md);
+    padding: 0.75rem;
+}
+
+/* Inputs */
+.cochat-base .cc-input,
+.cochat-base .cc-select,
+.cochat-base .cc-textarea {
+    width: 100%;
+    padding: 0.5rem 0.7rem;
+    background: var(--cc-surface);
+    color: var(--cc-text);
+    border: 1px solid var(--cc-border-strong);
+    border-radius: var(--cc-radius-md);
+    font: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.cochat-base .cc-input:focus,
+.cochat-base .cc-select:focus,
+.cochat-base .cc-textarea:focus {
+    outline: none;
+    border-color: var(--cc-primary);
+    box-shadow: var(--cc-shadow-focus);
+}
+.cochat-base .cc-textarea { min-height: 5rem; resize: vertical; }
+.cochat-base label { display: inline-block; margin-bottom: 0.25rem; color: var(--cc-text-soft); font-size: 0.875em; }
+
+/* Range slider — brand-tinted thumb in all browsers that support accent-color */
+.cochat-base input[type='range'] { accent-color: var(--cc-primary); }
+
+/* Tables */
+.cochat-base table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375em;
+}
+.cochat-base th,
+.cochat-base td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--cc-border);
+    text-align: left;
+    vertical-align: top;
+}
+.cochat-base th { color: var(--cc-text-soft); font-weight: 600; background: var(--cc-surface-soft); }
+
+/* Code */
+.cochat-base code,
+.cochat-base pre {
+    font-family: var(--cc-font-mono);
+    font-size: 0.875em;
+}
+.cochat-base code {
+    background: var(--cc-surface-muted);
+    color: var(--cc-text);
+    padding: 0.1em 0.35em;
+    border-radius: var(--cc-radius-xs);
+}
+.cochat-base pre {
+    background: var(--cc-surface-muted);
+    color: var(--cc-text);
+    padding: 0.75rem 1rem;
+    border-radius: var(--cc-radius-md);
+    overflow-x: auto;
+}
+.cochat-base pre code { background: transparent; padding: 0; }
+
+/* Focus ring for keyboard users (interactive elements not already covered) */
+.cochat-base :focus-visible {
+    outline: none;
+    box-shadow: var(--cc-shadow-focus);
+    border-radius: var(--cc-radius-sm);
+}
+
+/* Selection */
+.cochat-base ::selection {
+    background: var(--cc-primary-subtle);
+    color: var(--cc-text);
+}
+
+/* Scrollbars (WebKit) — subtle, brand-tinted */
+.cochat-base ::-webkit-scrollbar { width: 10px; height: 10px; }
+.cochat-base ::-webkit-scrollbar-track { background: transparent; }
+.cochat-base ::-webkit-scrollbar-thumb {
+    background: var(--cc-border-strong);
+    border-radius: var(--cc-radius-pill);
+}
+.cochat-base ::-webkit-scrollbar-thumb:hover { background: var(--cc-primary); }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .cochat-base *,
+    .cochat-base *::before,
+    .cochat-base *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+</style>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config = { darkMode: 'class', theme: { extend: { colors: { cochat: {"50": "#fdf2f9", "100": "#fae6f4", "200": "#f5ccea", "300": "#efa5db", "400": "#e46dc2", "500": "#d43ea6", "600": "#b82488", "700": "#811A71", "800": "#6b1760", "900": "#5a1952", "950": "#370a31"}, primary: '#811A71', accent: '#0ea371' } } } };</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clap to Find My Phone</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#a855f7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ClapFind">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:system-ui,-apple-system,sans-serif;
+      background:linear-gradient(160deg,#12071f 0%,#1c0535 45%,#0d1b4b 100%);
+      color:#f0e6ff;min-height:100vh;
+      display:flex;flex-direction:column;align-items:center;
+      padding:22px 16px 50px;gap:16px;
+    }
+    h1{font-size:1.3rem;font-weight:800;text-align:center}
+    .subtitle{font-size:.8rem;color:#b088d0;text-align:center;margin-top:-6px}
+    .ring-wrap{position:relative;width:130px;height:130px}
+    .ring-glow{position:absolute;inset:0;border-radius:50%;border:3px solid #3d2068;background:rgba(61,32,104,.3);transition:all .3s;}
+    .ring-glow.listening{border-color:#10b981;background:rgba(16,185,129,.1);box-shadow:0 0 24px rgba(16,185,129,.35);animation:listenPulse 1.5s ease-out infinite;}
+    .ring-glow.ringing{border-color:#c084fc;background:rgba(192,132,252,.12);box-shadow:0 0 28px rgba(192,132,252,.4);animation:ringPulse .6s ease-in-out infinite alternate;}
+    @keyframes listenPulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.5)}100%{box-shadow:0 0 0 22px rgba(16,185,129,0)}}
+    @keyframes ringPulse{from{transform:scale(1)}to{transform:scale(1.06)}}
+    .ring-inner{position:absolute;inset:8px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:3rem;}
+    .ring-inner.shake{animation:shake .18s infinite}
+    @keyframes shake{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+    .status-text{font-size:.85rem;font-weight:600;min-height:1.3em;text-align:center;color:#9977bb}
+    .status-text.listening{color:#10b981}
+    .status-text.ringing{color:#c084fc;font-size:.95rem}
+    .status-text.error{color:#f97316}
+    .clap-dots{display:flex;gap:10px;min-height:18px;justify-content:center}
+    .dot{width:14px;height:14px;border-radius:50%;background:#c084fc;opacity:0;transform:scale(.3);transition:all .15s;}
+    .dot.lit{opacity:1;transform:scale(1);box-shadow:0 0 8px #c084fc}
+    .card{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.11);border-radius:16px;padding:16px;width:100%;max-width:320px;}
+    .card-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:#9966cc;margin-bottom:12px;}
+    .tabs{display:flex;gap:6px;margin-bottom:12px}
+    .tab{flex:1;padding:7px;border-radius:8px;border:none;font-size:.78rem;font-weight:600;cursor:pointer;background:rgba(255,255,255,.07);color:#b088d0;transition:all .2s;}
+    .tab.active{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;box-shadow:0 2px 10px rgba(168,85,247,.3);}
+    /* Sound sections */
+    #panePreload{max-height:290px;overflow-y:auto;padding-right:4px;}
+    #panePreload::-webkit-scrollbar{width:3px;}
+    #panePreload::-webkit-scrollbar-thumb{background:rgba(168,85,247,.4);border-radius:99px;}
+    .cat-header{font-size:.71rem;font-weight:800;letter-spacing:.09em;color:#a855f7;text-transform:uppercase;padding:10px 2px 6px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:5px;}
+    .cat-header:first-child{padding-top:0;border-top:none;}
+    .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:2px;}
+    .sound-card{background:rgba(255,255,255,.07);border:2px solid transparent;border-radius:10px;padding:9px 4px;text-align:center;cursor:pointer;transition:all .18s;}
+    .sound-card:hover{background:rgba(255,255,255,.13);transform:scale(1.03)}
+    .sound-card.selected{border-color:#a855f7;background:rgba(168,85,247,.18);box-shadow:0 0 10px rgba(168,85,247,.25);}
+    .sound-card .sicon{font-size:1.5rem;display:block}
+    .sound-card .sname{font-size:.65rem;color:#c4a8e0;margin-top:3px}
+    /* Upload */
+    .upload-btn{width:100%;padding:10px;border-radius:10px;border:2px dashed rgba(168,85,247,.4);background:rgba(168,85,247,.08);color:#c4a8e0;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;position:relative;display:block;text-align:center;}
+    .upload-btn:hover{border-color:#a855f7;background:rgba(168,85,247,.15);color:#f0e6ff}
+    .upload-btn input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+    /* Trimmer */
+    .trimmer{margin-top:12px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.25);border-radius:12px;padding:12px;display:none;flex-direction:column;gap:10px;}
+    .trim-title{font-size:.72rem;font-weight:700;color:#a855f7;text-transform:uppercase;letter-spacing:.07em}
+    .trim-filename{font-size:.78rem;color:#e0d0f8;word-break:break-all}
+    .trim-dur{font-size:.7rem;color:#9977bb}
+    .tl-wrap{position:relative;height:22px;margin:2px 0}
+    .tl-bg{position:absolute;top:50%;transform:translateY(-50%);left:0;right:0;height:6px;background:rgba(255,255,255,.12);border-radius:99px;}
+    .tl-sel{position:absolute;top:50%;transform:translateY(-50%);height:6px;border-radius:99px;background:linear-gradient(90deg,#7c3aed,#c084fc);transition:left .05s,width .05s;}
+    .trim-row{display:flex;flex-direction:column;gap:4px}
+    .trim-row-label{display:flex;justify-content:space-between;font-size:.7rem;color:#9977bb;}
+    .trim-row-label span:last-child{color:#f0e6ff;font-weight:700}
+    input[type=range]{width:100%;appearance:none;-webkit-appearance:none;height:5px;border-radius:99px;background:rgba(255,255,255,.14);outline:none;cursor:pointer;}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a855f7);cursor:pointer;box-shadow:0 0 6px rgba(168,85,247,.5);}
+    input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;border:none;background:linear-gradient(135deg,#7c3aed,#a855f7);}
+    .trim-btns{display:flex;gap:7px;flex-wrap:wrap}
+    .trim-btn{flex:1;padding:8px 6px;border-radius:8px;border:none;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .15s;}
+    .trim-btn:active{transform:scale(.96)}
+    .trim-btn.preview{background:rgba(16,185,129,.2);color:#10b981;border:1px solid rgba(16,185,129,.3)}
+    .trim-btn.preview.stop{background:rgba(239,68,68,.2);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+    .trim-btn.save{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff}
+    .trim-btn.cancel{background:rgba(255,255,255,.08);color:#b088d0;border:1px solid rgba(255,255,255,.15)}
+    /* Song list */
+    .song-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+    .song-item{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border:2px solid transparent;border-radius:9px;padding:8px 10px;cursor:pointer;transition:all .18s;}
+    .song-item:hover{background:rgba(255,255,255,.12)}
+    .song-item.selected{border-color:#a855f7;background:rgba(168,85,247,.18)}
+    .song-item .s-icon{font-size:1.2rem;flex-shrink:0}
+    .song-item .s-name{font-size:.75rem;color:#e0d0f8;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .song-item .s-del{background:none;border:none;color:#7755aa;font-size:1rem;cursor:pointer;padding:2px 4px;border-radius:4px;flex-shrink:0;line-height:1;transition:color .15s;}
+    .song-item .s-del:hover{color:#f87171}
+    .empty-songs{text-align:center;font-size:.75rem;color:#7755aa;padding:14px 0;line-height:1.7}
+    .upload-status{font-size:.72rem;text-align:center;margin-top:6px;min-height:1em;color:#10b981}
+    .upload-status.err{color:#f87171}
+    /* Controls */
+    .ctrl-row{display:flex;flex-direction:column;gap:5px}
+    .ctrl-label{display:flex;justify-content:space-between;font-size:.74rem;color:#9966cc}
+    .ctrl-label span:last-child{color:#f0e6ff;font-weight:700}
+    .meter-bg{background:rgba(255,255,255,.1);border-radius:99px;height:8px;overflow:hidden}
+    .meter-fill{height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,#10b981,#3b82f6);transition:width .04s;}
+    .meter-fill.loud{background:linear-gradient(90deg,#a855f7,#c084fc)}
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+    button.btn{padding:11px 26px;border-radius:99px;border:none;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .15s;}
+    button.btn:active{transform:scale(.95)}
+    button.btn:disabled{opacity:.4;cursor:default}
+    .btn-start{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;box-shadow:0 4px 18px rgba(168,85,247,.35)}
+    .btn-test{background:rgba(255,255,255,.1);color:#f0e6ff;border:1px solid rgba(255,255,255,.2)}
+    .btn-stop{background:linear-gradient(135deg,#7c3aed,#c084fc);color:#fff;box-shadow:0 4px 18px rgba(168,85,247,.4);display:none}
+    .warn-box{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:10px 14px;font-size:.74rem;color:#fcd34d;max-width:300px;text-align:center;line-height:1.55;display:none;}
+    .disclaimer{max-width:300px;text-align:center;font-size:.7rem;color:#7755aa;line-height:1.6;padding:0 8px}
+    .disclaimer strong{color:#9966cc}
+  </style>
+</head>
+<body>
+
+<h1> Clap to Find My Phone</h1>
+<p class="subtitle">Clap twice and your phone will sing! </p>
+
+<div class="ring-wrap">
+  <div class="ring-glow" id="ringGlow"></div>
+  <div class="ring-inner" id="ringInner"></div>
+</div>
+<div class="status-text" id="statusText">Pick a sound &amp; tap Start</div>
+<div class="clap-dots"><div class="dot" id="dot0"></div><div class="dot" id="dot1"></div></div>
+
+<!-- Sound Picker -->
+<div class="card">
+  <div class="card-title"> Alarm Sound</div>
+  <div class="tabs">
+    <button class="tab active" id="tabPreload" onclick="switchTab('preload')"> Preloaded</button>
+    <button class="tab"        id="tabMy"      onclick="switchTab('my')"> My Songs</button>
+  </div>
+  <div id="panePreload"><div id="soundSections"></div></div>
+  <div id="paneMy" style="display:none">
+    <label class="upload-btn">
+      ✚ Add a song &amp; trim it
+      <input type="file" accept="audio/*" id="fileInput">
+    </label>
+    <div class="upload-status" id="uploadStatus"></div>
+    <div class="trimmer" id="trimmer">
+      <div class="trim-title">✂️ Trim Your Clip</div>
+      <div class="trim-filename" id="trimFilename"></div>
+      <div class="trim-dur" id="trimDur"></div>
+      <div class="tl-wrap"><div class="tl-bg"></div><div class="tl-sel" id="tlSel"></div></div>
+      <div class="trim-row">
+        <div class="trim-row-label"><span>▶ Start</span><span id="startTime">0:00</span></div>
+        <input type="range" id="trimStart" min="0" max="100" step="0.1" value="0">
+      </div>
+      <div class="trim-row">
+        <div class="trim-row-label"><span>⏹ End</span><span id="endTime">0:00</span></div>
+        <input type="range" id="trimEnd" min="0" max="100" step="0.1" value="100">
+      </div>
+      <div class="trim-btns">
+        <button class="trim-btn preview" id="previewBtn" onclick="togglePreview()">▶ Preview</button>
+        <button class="trim-btn save" onclick="saveTrim()"> Save</button>
+        <button class="trim-btn cancel" onclick="cancelTrim()">✕ Cancel</button>
+      </div>
+    </div>
+    <div class="song-list" id="songList"></div>
+  </div>
+</div>
+
+<!-- Settings -->
+<div class="card">
+  <div class="card-title">⚙️ Settings</div>
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div class="ctrl-row">
+      <div class="ctrl-label"><span> Volume Level</span><span id="volPct">0%</span></div>
+      <div class="meter-bg"><div class="meter-fill" id="meterFill"></div></div>
+    </div>
+    <div class="ctrl-row">
+      <div class="ctrl-label"><span> Clap Sensitivity</span><span id="threshLbl">45%</span></div>
+      <input type="range" id="thresh" min="10" max="90" value="45">
+    </div>
+    <div class="ctrl-row">
+      <div class="ctrl-label"><span> Alarm Volume</span><span id="volLbl">70%</span></div>
+      <input type="range" id="alarmVol" min="10" max="100" value="70">
+    </div>
+    <div class="ctrl-row">
+      <div class="ctrl-label"><span>⏱ Alarm Duration</span><span id="durLbl">10 sec</span></div>
+      <input type="range" id="dur" min="3" max="30" value="10">
+    </div>
+  </div>
+</div>
+
+<div class="btn-row">
+  <button class="btn btn-start" id="startBtn">▶ Start Listening</button>
+  <button class="btn btn-test"  id="testBtn"> Test Sound</button>
+</div>
+<div class="btn-row">
+  <button class="btn btn-stop" id="stopBtn">⏹ Stop</button>
+</div>
+<div class="warn-box" id="warnBox">
+  ⚠️ Mic is blocked in this preview. Open in a real browser tab for full clap detection. <strong>Test Sound</strong> still works!
+</div>
+<div class="disclaimer">
+  <strong>Disclaimer:</strong> This app uses your device's microphone solely to detect sound — no audio is recorded or stored. Your saved songs are kept only on this device. Please only upload music you own or have permission to use.
+</div>
+
+<script>
+// ── Sound catalogue ────────────────────────────────────────────
+const SOUNDS=[
+  {cat:' Melodies',items:[
+    {id:'bell',icon:'',name:'Soft Bell'},
+    {id:'piano',icon:'',name:'Piano'},
+    {id:'chime',icon:'✨',name:'Wind Chime'},
+    {id:'lullaby',icon:'',name:'Lullaby'},
+    {id:'harp',icon:'',name:'Harp'},
+    {id:'sakura',icon:'',name:'Sakura'},
+    {id:'dreamy',icon:'☁️',name:'Dreamy'},
+    {id:'strings',icon:'',name:'Strings'},
+    {id:'tibetan',icon:'',name:'Tibetan'},
+  ]},
+  {cat:' Emergency',items:[
+    {id:'police',icon:'',name:'Police'},
+    {id:'fire',icon:'',name:'Fire Truck'},
+    {id:'ambulance',icon:'',name:'Ambulance'},
+  ]},
+  {cat:' Nature',items:[
+    {id:'ocean',icon:'',name:'Ocean'},
+    {id:'forest',icon:'',name:'Forest'},
+    {id:'thunder',icon:'⚡',name:'Thunder'},
+    {id:'rain',icon:'️',name:'Rain'},
+  ]},
+  {cat:' Fun',items:[
+    {id:'baby',icon:'',name:'Baby Cry'},
+    {id:'train',icon:'',name:'Train'},
+    {id:'foghorn',icon:'',name:'Foghorn'},
+    {id:'airhorn',icon:'',name:'Air Horn'},
+  ]},
+];
+
+let selectedPreload='bell', selectedMyId=null, currentTab='preload';
+
+// Render categories
+const sections=document.getElementById('soundSections');
+SOUNDS.forEach(cat=>{
+  const h=document.createElement('div');h.className='cat-header';h.textContent=cat.cat;
+  sections.appendChild(h);
+  const g=document.createElement('div');g.className='cat-grid';
+  cat.items.forEach(s=>{
+    const el=document.createElement('div');
+    el.className='sound-card'+(s.id===selectedPreload?' selected':'');
+    el.id='sc-'+s.id;
+    el.innerHTML=`<span class="sicon">${s.icon}</span><div class="sname">${s.name}</div>`;
+    el.addEventListener('click',()=>{
+      selectedPreload=s.id;
+      document.querySelectorAll('.sound-card').forEach(c=>c.classList.remove('selected'));
+      el.classList.add('selected');
+    });
+    g.appendChild(el);
+  });
+  sections.appendChild(g);
+});
+
+function switchTab(tab){
+  currentTab=tab;
+  document.getElementById('panePreload').style.display=tab==='preload'?'':'none';
+  document.getElementById('paneMy').style.display=tab==='my'?'':'none';
+  document.getElementById('tabPreload').className='tab'+(tab==='preload'?' active':'');
+  document.getElementById('tabMy').className='tab'+(tab==='my'?' active':'');
+}
+
+// ── localStorage ──────────────────────────────────────────────
+const STORE_KEY='clapPhone_songs_v1';
+function getSongs(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'[]');}catch(e){return[];}}
+function storeSong(name,dataUrl){const songs=getSongs();const id='song_'+Date.now();songs.push({id,name,data:dataUrl});try{localStorage.setItem(STORE_KEY,JSON.stringify(songs));return id;}catch(e){return null;}}
+function removeSong(id){const songs=getSongs().filter(s=>s.id!==id);localStorage.setItem(STORE_KEY,JSON.stringify(songs));if(selectedMyId===id)selectedMyId=null;}
+function renderSongList(){
+  const list=document.getElementById('songList');const songs=getSongs();
+  if(!songs.length){list.innerHTML='<div class="empty-songs"> No songs saved yet.<br>Tap above to add one!</div>';return;}
+  list.innerHTML='';
+  songs.forEach(s=>{
+    const item=document.createElement('div');
+    item.className='song-item'+(s.id===selectedMyId?' selected':'');
+    const short=s.name.length>28?s.name.slice(0,25)+'…':s.name;
+    item.innerHTML=`<span class="s-icon"></span><span class="s-name" title="${s.name}">${short}</span><button class="s-del" data-id="${s.id}">✕</button>`;
+    item.addEventListener('click',e=>{if(e.target.classList.contains('s-del'))return;selectedMyId=s.id;document.querySelectorAll('.song-item').forEach(i=>i.classList.remove('selected'));item.classList.add('selected');});
+    item.querySelector('.s-del').addEventListener('click',e=>{e.stopPropagation();removeSong(s.id);renderSongList();});
+    list.appendChild(item);
+  });
+}
+renderSongList();
+
+// ── Trimmer ──────────────────────────────────────────────────
+let rawBuffer=null,rawFileName='',previewSrc=null;
+function fmt(sec){const m=Math.floor(sec/60);const s=Math.floor(sec%60).toString().padStart(2,'0');return`${m}:${s}`;}
+
+document.getElementById('fileInput').addEventListener('change',async function(){
+  const file=this.files[0];if(!file)return;
+  const st=document.getElementById('uploadStatus');
+  st.textContent='⏳ Loading…';st.className='upload-status';
+  try{
+    ensureCtx();const ab=await file.arrayBuffer();
+    rawBuffer=await new Promise((res,rej)=>audioCtx.decodeAudioData(ab,res,rej));
+    rawFileName=file.name;showTrimmer();st.textContent='';
+  }catch(e){st.textContent='❌ Could not load this file.';st.className='upload-status err';}
+  this.value='';
+});
+
+function showTrimmer(){
+  const dur=rawBuffer.duration;
+  document.getElementById('trimFilename').textContent=rawFileName.length>30?rawFileName.slice(0,27)+'…':rawFileName;
+  document.getElementById('trimDur').textContent='Duration: '+fmt(dur);
+  const s=document.getElementById('trimStart'),e=document.getElementById('trimEnd');
+  s.min=0;s.max=dur;s.step=0.1;s.value=0;
+  e.min=0;e.max=dur;e.step=0.1;e.value=Math.min(60,dur);
+  updateTrimDisplay();
+  document.getElementById('trimmer').style.display='flex';
+}
+function updateTrimDisplay(){
+  if(!rawBuffer)return;
+  const dur=rawBuffer.duration;
+  const sv=parseFloat(document.getElementById('trimStart').value);
+  const ev=parseFloat(document.getElementById('trimEnd').value);
+  document.getElementById('startTime').textContent=fmt(sv);
+  document.getElementById('endTime').textContent=fmt(ev);
+  const sel=document.getElementById('tlSel');
+  sel.style.left=(sv/dur*100)+'%';sel.style.width=((ev-sv)/dur*100)+'%';
+}
+document.getElementById('trimStart').addEventListener('input',function(){const e=document.getElementById('trimEnd');if(parseFloat(this.value)>=parseFloat(e.value))this.value=parseFloat(e.value)-.2;updateTrimDisplay();});
+document.getElementById('trimEnd').addEventListener('input',function(){const s=document.getElementById('trimStart');if(parseFloat(this.value)<=parseFloat(s.value))this.value=parseFloat(s.value)+.2;updateTrimDisplay();});
+
+function togglePreview(){
+  if(previewSrc){stopPreview();return;}
+  if(!rawBuffer||!audioCtx)return;
+  const s=parseFloat(document.getElementById('trimStart').value);
+  const e=parseFloat(document.getElementById('trimEnd').value);
+  previewSrc=audioCtx.createBufferSource();previewSrc.buffer=rawBuffer;
+  previewSrc.connect(audioCtx.destination);previewSrc.start(0,s,e-s);
+  const btn=document.getElementById('previewBtn');
+  btn.textContent='⏹ Stop';btn.classList.add('stop');
+  previewSrc.onended=()=>{previewSrc=null;btn.textContent='▶ Preview';btn.classList.remove('stop');};
+}
+function stopPreview(){
+  if(previewSrc){try{previewSrc.stop();}catch(e){}previewSrc=null;}
+  const btn=document.getElementById('previewBtn');btn.textContent='▶ Preview';btn.classList.remove('stop');
+}
+async function saveTrim(){
+  if(!rawBuffer)return;
+  const s=parseFloat(document.getElementById('trimStart').value);
+  const e=parseFloat(document.getElementById('trimEnd').value);
+  const st=document.getElementById('uploadStatus');
+  if(e-s<1){st.textContent='⚠️ At least 1 second required.';st.className='upload-status err';return;}
+  stopPreview();st.textContent='⏳ Processing…';st.className='upload-status';
+  try{
+    const sr=rawBuffer.sampleRate,s0=Math.floor(s*sr),e0=Math.floor(e*sr),len=e0-s0,nch=rawBuffer.numberOfChannels;
+    const tb=audioCtx.createBuffer(nch,len,sr);
+    for(let c=0;c<nch;c++)tb.copyToChannel(rawBuffer.getChannelData(c).subarray(s0,e0),c);
+    const tr=22050,frames=Math.ceil((e-s)*tr);
+    const off=new OfflineAudioContext(1,frames,tr);
+    const src2=off.createBufferSource();src2.buffer=tb;src2.connect(off.destination);src2.start(0);
+    const rendered=await off.startRendering();
+    const wav=encodeWAV(rendered);
+    if(wav.size>8*1024*1024){st.textContent='⚠️ Too large — try a shorter clip.';st.className='upload-status err';return;}
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const id=storeSong(rawFileName,ev.target.result);
+      if(!id){st.textContent='❌ Storage full — delete a song first.';st.className='upload-status err';}
+      else{st.textContent='✅ Saved!';st.className='upload-status';selectedMyId=id;cancelTrim();renderSongList();}
+    };
+    reader.readAsDataURL(wav);
+  }catch(err){st.textContent='❌ Could not process audio.';st.className='upload-status err';}
+}
+function encodeWAV(buf){
+  const sr=buf.sampleRate,samples=buf.getChannelData(0),len=samples.length*2;
+  const ab=new ArrayBuffer(44+len);const v=new DataView(ab);
+  const ws=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
+  ws(0,'RIFF');v.setUint32(4,36+len,true);ws(8,'WAVE');
+  ws(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);
+  v.setUint16(22,1,true);v.setUint32(24,sr,true);
+  v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);
+  ws(36,'data');v.setUint32(40,len,true);
+  let off=44;
+  for(let i=0;i<samples.length;i++){const x=Math.max(-1,Math.min(1,samples[i]));v.setInt16(off,x<0?x*0x8000:x*0x7FFF,true);off+=2;}
+  return new Blob([ab],{type:'audio/wav'});
+}
+function cancelTrim(){stopPreview();rawBuffer=null;rawFileName='';document.getElementById('trimmer').style.display='none';}
+
+// ── Synth helpers ───────────────────────────────────────────────
+function note(ctx,g,freq,start,peak,atk,dec){
+  const o=ctx.createOscillator(),gg=ctx.createGain();
+  o.type='sine';o.frequency.value=freq;
+  gg.gain.setValueAtTime(0,start);gg.gain.linearRampToValueAtTime(peak,start+atk);
+  gg.gain.exponentialRampToValueAtTime(0.001,start+atk+dec);
+  o.connect(gg);gg.connect(g);o.start(start);o.stop(start+atk+dec+.05);
+  return[o,gg];
+}
+
+// ── Preloaded synths ─────────────────────────────────────────────
+function synthBell(ctx,g,sec){const sc=[523.25,659.25,783.99,1046.5,1318.5],nodes=[],now=ctx.currentTime;let t=now;while(t<now+sec){sc.forEach((f,i)=>{const s=t+i*.7;if(s>=now+sec)return;nodes.push(...note(ctx,g,f,s,.4,.015,2.2));nodes.push(...note(ctx,g,f*2,s,.12,.01,1.5));});t+=sc.length*.7+1.5;}return nodes;}
+function synthPiano(ctx,g,sec){const mel=[523,659,784,1047,784,659,523,659,784,523],nodes=[],now=ctx.currentTime;let t=now;while(t<now+sec){mel.forEach((f,i)=>{const s=t+i*.38;if(s>=now+sec)return;nodes.push(...note(ctx,g,f,s,.45,.008,1.4));nodes.push(...note(ctx,g,f*2,s,.1,.008,.8));});t+=mel.length*.38+.5;}return nodes;}
+function synthChime(ctx,g,sec){const nts=[880,1046.5,1174.7,1318.5,1568,2093],gaps=[.5,.8,.35,1.1,.6,.45,.9,.7],nodes=[],now=ctx.currentTime;let t=now,gi=0;while(t<now+sec){nodes.push(...note(ctx,g,nts[gi%nts.length],t,.35,.01,1.8));t+=gaps[gi%gaps.length];gi++;}return nodes;}
+function synthLullaby(ctx,g,sec){const mel=[523,523,784,784,880,880,784,698,698,659,659,587,587,523],nodes=[],now=ctx.currentTime;let t=now;while(t<now+sec){mel.forEach((f,i)=>{const s=t+i*.52;if(s>=now+sec)return;nodes.push(...note(ctx,g,f,s,.38,.03,.9));});t+=mel.length*.52+.8;}return nodes;}
+function synthHarp(ctx,g,sec){const chords=[[523,659,784,1047],[587,740,880,1175],[494,659,784,988]],nodes=[],now=ctx.currentTime;let t=now,ci=0;while(t<now+sec){const ch=chords[ci%chords.length];ch.forEach((f,i)=>{const s=t+i*.12;if(s>=now+sec)return;const o=ctx.createOscillator(),gg=ctx.createGain();o.type='triangle';o.frequency.value=f;gg.gain.setValueAtTime(0,s);gg.gain.linearRampToValueAtTime(.4,s+.012);gg.gain.exponentialRampToValueAtTime(.001,s+1.6);o.connect(gg);gg.connect(g);o.start(s);o.stop(s+1.65);nodes.push(o,gg);});t+=ch.length*.12+1;ci++;}return nodes;}
+function synthSakura(ctx,g,sec){const sc=[293.66,311.13,392,440,466.16,587.33,622.25,784],nodes=[],now=ctx.currentTime;let t=now;while(t<now+sec){sc.forEach((f,i)=>{const s=t+i*.42;if(s>=now+sec)return;nodes.push(...note(ctx,g,f,s,.36,.018,2.0));});t+=sc.length*.42+1.2;}return nodes;}
+function synthDreamy(ctx,g,sec){const chords=[[261.63,329.63,392,523.25],[293.66,369.99,440,587.33],[349.23,440,523.25,698.46],[392,493.88,587.33,783.99]],nodes=[],now=ctx.currentTime;let t=now,ci=0;while(t<now+sec){const ch=chords[ci%chords.length];ch.forEach(f=>{[f,f*1.003].forEach(fr=>{const o=ctx.createOscillator(),gg=ctx.createGain();o.type='sine';o.frequency.value=fr;gg.gain.setValueAtTime(0,t);gg.gain.linearRampToValueAtTime(.13,t+.6);gg.gain.setValueAtTime(.13,t+2.4);gg.gain.linearRampToValueAtTime(0,t+3.2);o.connect(gg);gg.connect(g);o.start(t);o.stop(t+3.3);nodes.push(o,gg);});});t+=2.8;ci++;}return nodes;}
+function synthStrings(ctx,g,sec){const mel=[440,494,523,587,659,587,523,494],nodes=[],now=ctx.currentTime;let t=now;while(t<now+sec){mel.forEach((f,i)=>{const s=t+i*.65;if(s>=now+sec)return;const o=ctx.createOscillator(),fl=ctx.createBiquadFilter(),gg=ctx.createGain();o.type='sawtooth';o.frequency.value=f;fl.type='lowpass';fl.frequency.value=680;fl.Q.value=3;gg.gain.setValueAtTime(0,s);gg.gain.linearRampToValueAtTime(.26,s+.18);gg.gain.setValueAtTime(.26,s+.48);gg.gain.linearRampToValueAtTime(0,s+.65);o.connect(fl);fl.connect(gg);gg.connect(g);o.start(s);o.stop(s+.7);nodes.push(o,fl,gg);});t+=mel.length*.65+1.2;}return nodes;}
+function synthTibetan(ctx,g,sec){const bowls=[174.61,196,220,246.94],harm=[1,2.756,5.404],nodes=[],now=ctx.currentTime;let t=now,bi=0;while(t<now+sec){harm.forEach((m,hi)=>{const f=bowls[bi%bowls.length]*m,pk=hi===0?.4:hi===1?.17:.07;nodes.push(...note(ctx,g,f,t,pk,.28,5.2));});t+=4.8;bi++;}return nodes;}
+// Nature
+function synthOcean(ctx,g,sec){const now=ctx.currentTime,nodes=[],bufLen=ctx.sampleRate*2,buf=ctx.createBuffer(1,bufLen,ctx.sampleRate);const d=buf.getChannelData(0);for(let i=0;i<bufLen;i++)d[i]=Math.random()*2-1;const ns=ctx.createBufferSource();ns.buffer=buf;ns.loop=true;const fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.value=350;fl.Q.value=0.8;const ng=ctx.createGain();ng.gain.value=0.11;ns.connect(fl);fl.connect(ng);ng.connect(g);ns.start(now);ns.stop(now+sec);nodes.push(ns,fl,ng);const cn=[2093,1760,2349];let t=now+1.5,ti=0;while(t<now+sec){nodes.push(...note(ctx,g,cn[ti%3],t,.16,.01,2.8));t+=2+(ti%3)*.7+.3;ti++;}return nodes;}
+function synthForest(ctx,g,sec){const birds=[[1400,1600,.3],[1800,2000,.4],[1200,1400,.35],[2000,1800,.28],[1600,1800,.38],[1000,1200,.32]],nodes=[],now=ctx.currentTime;let t=now,bi=0;while(t<now+sec){const[f1,f2,gv]=birds[bi%birds.length];const o=ctx.createOscillator(),gg=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(f1,t);o.frequency.linearRampToValueAtTime(f2,t+.18);o.frequency.linearRampToValueAtTime(f1,t+.35);gg.gain.setValueAtTime(0,t);gg.gain.linearRampToValueAtTime(gv,t+.05);gg.gain.exponentialRampToValueAtTime(.001,t+.5);o.connect(gg);gg.connect(g);o.start(t);o.stop(t+.55);nodes.push(o,gg);const gap=.3+(bi%3)*.25;t+=gap;bi++;}return nodes;}
+function synthThunder(ctx,g,sec){const now=ctx.currentTime,nodes=[],bufLen=ctx.sampleRate*3,buf=ctx.createBuffer(1,bufLen,ctx.sampleRate);const d=buf.getChannelData(0);for(let i=0;i<bufLen;i++)d[i]=Math.random()*2-1;const strikes=sec>6?[0,sec*.38,sec*.72]:sec>3?[0,sec*.55]:[0];strikes.forEach(off=>{const t=now+off,ns=ctx.createBufferSource();ns.buffer=buf;const fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.value=200;const gg=ctx.createGain();gg.gain.setValueAtTime(.9,t);gg.gain.exponentialRampToValueAtTime(.001,t+Math.min(3.5,sec-off));ns.connect(fl);fl.connect(gg);gg.connect(g);ns.start(t);ns.stop(t+Math.min(3.6,sec-off+.1));nodes.push(ns,fl,gg);});return nodes;}
+function synthRain(ctx,g,sec){const now=ctx.currentTime,bufLen=ctx.sampleRate*2,buf=ctx.createBuffer(1,bufLen,ctx.sampleRate);const d=buf.getChannelData(0);for(let i=0;i<bufLen;i++)d[i]=Math.random()*2-1;const ns=ctx.createBufferSource();ns.buffer=buf;ns.loop=true;const fl=ctx.createBiquadFilter();fl.type='bandpass';fl.frequency.value=2500;fl.Q.value=.4;const gg=ctx.createGain();gg.gain.value=.22;ns.connect(fl);fl.connect(gg);gg.connect(g);ns.start(now);ns.stop(now+sec);return[ns,fl,gg];}
+// Emergency
+function synthPolice(ctx,g,sec){const now=ctx.currentTime,o=ctx.createOscillator(),gg=ctx.createGain();o.type='sawtooth';let t=now;o.frequency.setValueAtTime(800,t);while(t<now+sec){o.frequency.linearRampToValueAtTime(1200,t+.5);o.frequency.linearRampToValueAtTime(800,t+1);t+=1;}gg.gain.value=.55;o.connect(gg);gg.connect(g);o.start(now);o.stop(now+sec);return[o,gg];}
+function synthFire(ctx,g,sec){const now=ctx.currentTime,o=ctx.createOscillator(),gg=ctx.createGain();o.type='sawtooth';let t=now;o.frequency.setValueAtTime(660,t);while(t<now+sec){o.frequency.linearRampToValueAtTime(900,t+.3);o.frequency.setValueAtTime(660,t+.32);o.frequency.linearRampToValueAtTime(900,t+.62);o.frequency.setValueAtTime(660,t+.64);t+=.64;}gg.gain.value=.55;o.connect(gg);gg.connect(g);o.start(now);o.stop(now+sec);return[o,gg];}
+function synthAmbulance(ctx,g,sec){const now=ctx.currentTime,o=ctx.createOscillator(),gg=ctx.createGain();o.type='sawtooth';let t=now;o.frequency.setValueAtTime(500,t);while(t<now+sec){o.frequency.linearRampToValueAtTime(800,t+.7);o.frequency.linearRampToValueAtTime(500,t+1.4);t+=1.4;}gg.gain.value=.55;o.connect(gg);gg.connect(g);o.start(now);o.stop(now+sec);return[o,gg];}
+// Fun
+function synthBaby(ctx,g,sec){const now=ctx.currentTime,nodes=[];let t=now;while(t<now+sec){const o=ctx.createOscillator(),fl=ctx.createBiquadFilter(),gg=ctx.createGain();o.type='sawtooth';o.frequency.setValueAtTime(380,t);o.frequency.linearRampToValueAtTime(560,t+.28);o.frequency.linearRampToValueAtTime(440,t+.65);o.frequency.linearRampToValueAtTime(580,t+.95);o.frequency.linearRampToValueAtTime(380,t+1.35);fl.type='bandpass';fl.frequency.value=900;fl.Q.value=1.5;gg.gain.setValueAtTime(0,t);gg.gain.linearRampToValueAtTime(.55,t+.06);gg.gain.setValueAtTime(.55,t+1.15);gg.gain.linearRampToValueAtTime(0,t+1.5);o.connect(fl);fl.connect(gg);gg.connect(g);o.start(t);o.stop(t+1.6);nodes.push(o,fl,gg);t+=1.85;}return nodes;}
+function synthTrain(ctx,g,sec){const now=ctx.currentTime,nodes=[],bufLen=ctx.sampleRate*2,buf=ctx.createBuffer(1,bufLen,ctx.sampleRate);const d=buf.getChannelData(0);for(let i=0;i<bufLen;i++)d[i]=Math.random()*2-1;const ns=ctx.createBufferSource();ns.buffer=buf;ns.loop=true;const fl=ctx.createBiquadFilter();fl.type='bandpass';fl.frequency.value=120;fl.Q.value=2;const ng=ctx.createGain();let t=now;while(t<now+sec){ng.gain.setValueAtTime(.45,t);ng.gain.linearRampToValueAtTime(.08,t+.18);ng.gain.linearRampToValueAtTime(.45,t+.25);ng.gain.linearRampToValueAtTime(.08,t+.43);t+=.5;}ns.connect(fl);fl.connect(ng);ng.connect(g);ns.start(now);ns.stop(now+sec);nodes.push(ns,fl,ng);[.8,2.5,4.0,6.5,9.0].forEach(wt=>{if(now+wt>=now+sec)return;const o=ctx.createOscillator(),wg=ctx.createGain();o.type='sine';o.frequency.value=880;wg.gain.setValueAtTime(0,now+wt);wg.gain.linearRampToValueAtTime(.4,now+wt+.04);wg.gain.setValueAtTime(.4,now+wt+.5);wg.gain.linearRampToValueAtTime(0,now+wt+.7);o.connect(wg);wg.connect(g);o.start(now+wt);o.stop(now+wt+.75);nodes.push(o,wg);});return nodes;}
+function synthFoghorn(ctx,g,sec){const now=ctx.currentTime,nodes=[];let t=now;while(t<now+sec){const o=ctx.createOscillator(),fl=ctx.createBiquadFilter(),gg=ctx.createGain();o.type='sawtooth';o.frequency.setValueAtTime(120,t);o.frequency.linearRampToValueAtTime(95,t+1.5);fl.type='bandpass';fl.frequency.value=160;fl.Q.value=1;gg.gain.setValueAtTime(0,t);gg.gain.linearRampToValueAtTime(.6,t+.12);gg.gain.setValueAtTime(.6,t+1.3);gg.gain.linearRampToValueAtTime(0,t+1.6);o.connect(fl);fl.connect(gg);gg.connect(g);o.start(t);o.stop(t+1.7);nodes.push(o,fl,gg);t+=3.2;}return nodes;}
+function synthAirHorn(ctx,g,sec){const now=ctx.currentTime,nodes=[];let t=now;while(t<now+sec){const o=ctx.createOscillator(),gg=ctx.createGain();o.type='sawtooth';o.frequency.value=420;gg.gain.setValueAtTime(0,t);gg.gain.linearRampToValueAtTime(.6,t+.01);gg.gain.setValueAtTime(.6,t+.45);gg.gain.linearRampToValueAtTime(0,t+.55);o.connect(gg);gg.connect(g);o.start(t);o.stop(t+.6);nodes.push(o,gg);t+=.85;}return nodes;}
+
+// ── Alarm engine ───────────────────────────────────────────────
+let audioCtx=null,analyser=null,micStream=null,rafId=null;
+let listening=false,alarmActive=false;
+let alarmNodes=[],alarmTimer=null,alarmAudio=null;
+let lastClapAt=0,clapTimes=[];
+const WINDOW=1300,COOLDOWN=260;
+function ensureCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();}
+
+function playAlarm(){
+  ensureCtx();killAlarm(false);
+  const sec=parseInt(document.getElementById('dur').value);
+  const vol=parseInt(document.getElementById('alarmVol').value)/100;
+  const useMy=currentTab==='my'&&selectedMyId;
+  if(useMy){
+    const song=getSongs().find(s=>s.id===selectedMyId);
+    if(song){alarmAudio=new Audio(song.data);alarmAudio.volume=vol;alarmAudio.loop=true;alarmAudio.play().catch(()=>{});alarmTimer=setTimeout(()=>killAlarm(true),sec*1000);}
+    else doSynthAlarm('bell',sec,vol);
+  }else doSynthAlarm(selectedPreload,sec,vol);
+  alarmActive=true;
+  document.getElementById('ringGlow').className='ring-glow ringing';
+  document.getElementById('ringInner').textContent='';
+  document.getElementById('ringInner').classList.add('shake');
+  setStatus(' Here I am! Tap Stop to silence.','ringing');
+  document.getElementById('stopBtn').style.display='';
+}
+function doSynthAlarm(id,sec,vol){
+  const mg=audioCtx.createGain();mg.gain.value=vol;mg.connect(audioCtx.destination);alarmNodes=[mg];
+  const fns={bell:synthBell,piano:synthPiano,chime:synthChime,lullaby:synthLullaby,harp:synthHarp,sakura:synthSakura,dreamy:synthDreamy,strings:synthStrings,tibetan:synthTibetan,ocean:synthOcean,forest:synthForest,thunder:synthThunder,rain:synthRain,police:synthPolice,fire:synthFire,ambulance:synthAmbulance,baby:synthBaby,train:synthTrain,foghorn:synthFoghorn,airhorn:synthAirHorn};
+  alarmNodes.push(...(fns[id]||synthBell)(audioCtx,mg,sec));
+  alarmTimer=setTimeout(()=>killAlarm(true),sec*1000+300);
+}
+function killAlarm(restore){
+  clearTimeout(alarmTimer);
+  alarmNodes.forEach(n=>{try{n.stop&&n.stop();n.disconnect&&n.disconnect();}catch(e){}});alarmNodes=[];
+  if(alarmAudio){alarmAudio.pause();alarmAudio=null;}
+  alarmActive=false;
+  document.getElementById('ringInner').classList.remove('shake');
+  document.getElementById('stopBtn').style.display='none';
+  if(restore&&listening)setListeningUI();
+  else if(!listening)setIdleUI();
+}
+document.getElementById('stopBtn').addEventListener('click',()=>killAlarm(listening));
+document.getElementById('testBtn').addEventListener('click',()=>{ensureCtx();playAlarm();});
+
+async function startListening(){
+  ensureCtx();
+  try{micStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});}
+  catch(e){document.getElementById('warnBox').style.display='';setStatus('⚠️ Mic unavailable — use Test Sound.','error');return;}
+  const src=audioCtx.createMediaStreamSource(micStream);
+  analyser=audioCtx.createAnalyser();analyser.fftSize=512;src.connect(analyser);
+  listening=true;clapTimes=[];
+  document.getElementById('startBtn').textContent='⏹ Stop Listening';
+  setListeningUI();loop();
+}
+function stopListening(){listening=false;if(rafId){cancelAnimationFrame(rafId);rafId=null;}if(micStream){micStream.getTracks().forEach(t=>t.stop());micStream=null;}analyser=null;killAlarm(false);setIdleUI();}
+function loop(){
+  if(!listening||!analyser)return;
+  rafId=requestAnimationFrame(loop);
+  const buf=new Uint8Array(analyser.fftSize);
+  analyser.getByteTimeDomainData(buf);
+  let sum=0;for(let i=0;i<buf.length;i++){const v=(buf[i]-128)/128;sum+=v*v;}
+  const pct=Math.min(Math.round(Math.sqrt(sum/buf.length)*400),100);
+  const thresh=+document.getElementById('thresh').value;
+  document.getElementById('meterFill').style.width=pct+'%';
+  document.getElementById('meterFill').className='meter-fill'+(pct>=thresh?' loud':'');
+  document.getElementById('volPct').textContent=pct+'%';
+  if(alarmActive)return;
+  const now=Date.now();
+  if(pct>=thresh&&(now-lastClapAt)>COOLDOWN){
+    lastClapAt=now;clapTimes.push(now);
+    clapTimes=clapTimes.filter(t=>now-t<=WINDOW);
+    document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('lit',i<clapTimes.length));
+    if(clapTimes.length>=2){clapTimes=[];document.querySelectorAll('.dot').forEach(d=>d.classList.remove('lit'));playAlarm();}
+  }
+  if(clapTimes.length>0&&(now-clapTimes[clapTimes.length-1])>WINDOW){clapTimes=[];document.querySelectorAll('.dot').forEach(d=>d.classList.remove('lit'));}
+}
+
+document.getElementById('startBtn').addEventListener('click',()=>listening?stopListening():startListening());
+document.getElementById('thresh').addEventListener('input',function(){document.getElementById('threshLbl').textContent=this.value+'%';});
+document.getElementById('alarmVol').addEventListener('input',function(){document.getElementById('volLbl').textContent=this.value+'%';});
+document.getElementById('dur').addEventListener('input',function(){document.getElementById('durLbl').textContent=this.value+' sec';});
+
+function setListeningUI(){document.getElementById('ringGlow').className='ring-glow listening';document.getElementById('ringInner').textContent='';document.getElementById('startBtn').textContent='⏹ Stop Listening';setStatus('Listening for claps…','listening');}
+function setIdleUI(){document.getElementById('ringGlow').className='ring-glow';document.getElementById('ringInner').textContent='';document.getElementById('startBtn').textContent='▶ Start Listening';document.getElementById('meterFill').style.width='0%';document.getElementById('volPct').textContent='0%';document.querySelectorAll('.dot').forEach(d=>d.classList.remove('lit'));setStatus('Pick a sound &amp; tap Start','');}
+function setStatus(msg,cls){const el=document.getElementById('statusText');el.innerHTML=msg;el.className='status-text'+(cls?' '+cls:'');}
+</script>
+<script data-cochat-helper="true">
+// Dark mode sync from parent
+window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'darkMode') {
+        document.documentElement.classList.toggle('dark', e.data.dark);
+    }
+});
+
+// CoChat helpers — bridge to the parent window for authenticated calls.
+// The artifact iframe has no ``allow-same-origin``, so localStorage and
+// direct same-origin fetches with auth do not work here. The parent
+// attaches the user's token, picks a model (preferring the active chat's
+// selection over a platform default), and proxies to an allow-listed
+// endpoint. If your caller wants to pin a specific model id, set
+// ``window._cochatModel = '<model-id>'`` before invoking ``cochat.ask``.
+(function() {
+    var _pending = {};
+    var _seq = 0;
+    var _BRIDGE_TIMEOUT_MS = 30000;
+
+    function _newRequestId() {
+        _seq += 1;
+        return 'cochat-' + Date.now().toString(36) + '-' + _seq.toString(36);
+    }
+
+    window.addEventListener('message', function(e) {
+        var data = e.data;
+        if (!data || data.type !== 'cochat:bridge:response') return;
+        var pending = _pending[data.requestId];
+        if (!pending) return;
+        delete _pending[data.requestId];
+        clearTimeout(pending.timer);
+        if (data.error) {
+            pending.reject(new Error(data.error));
+        } else {
+            pending.resolve(data);
+        }
+    });
+
+    function _bridge(message) {
+        return new Promise(function(resolve, reject) {
+            if (!window.parent || window.parent === window) {
+                reject(new Error('CoChat bridge unavailable: no parent window'));
+                return;
+            }
+            var requestId = _newRequestId();
+            var timer = setTimeout(function() {
+                if (_pending[requestId]) {
+                    delete _pending[requestId];
+                    reject(new Error('CoChat bridge timed out after 30s'));
+                }
+            }, _BRIDGE_TIMEOUT_MS);
+            _pending[requestId] = { resolve: resolve, reject: reject, timer: timer };
+            try {
+                window.parent.postMessage(
+                    Object.assign({ requestId: requestId }, message),
+                    '*'
+                );
+            } catch (err) {
+                delete _pending[requestId];
+                clearTimeout(timer);
+                reject(err);
+            }
+        });
+    }
+
+    window.cochat = {
+        // Call the LLM. The parent attaches auth and uses the current chat's model.
+        // Usage: const reply = await cochat.ask("What is 2+2?", {system: "..."});
+        ask: async function(prompt, options) {
+            options = options || {};
+            var model = (options && options.model) || window._cochatModel || '';
+            var resp = await _bridge({
+                type: 'cochat:ask',
+                prompt: prompt,
+                system: options.system || '',
+                model: model
+            });
+            if (resp && typeof resp.content === 'string') return resp.content;
+            return '';
+        },
+
+        // Proxied external HTTP call. Goes through /api/proxy parent-side.
+        // Usage: const r = await cochat.fetch({method:'GET', url:'https://api.example.com/x'});
+        fetch: async function(opts) {
+            opts = opts || {};
+            var resp = await _bridge({
+                type: 'cochat:proxy',
+                method: opts.method || 'GET',
+                url: opts.url || '',
+                headers: opts.headers || {},
+                body: typeof opts.body === 'string' ? opts.body : (opts.body == null ? '' : JSON.stringify(opts.body))
+            });
+            return {
+                ok: !!resp.ok,
+                status: resp.status || 0,
+                headers: resp.headers || {},
+                body: resp.body || '',
+                json: function() {
+                    try { return JSON.parse(resp.body || ''); } catch (e) { return null; }
+                }
+            };
+        }
+    };
+})();
+</script>
+</body>
+</html>
+<script>
+  window.addEventListener('load',()=>{
+    try{
+      if('serviceWorker' in navigator && window.isSecureContext)
+        navigator.serviceWorker.register('/sw.js').catch(()=>{});
+    }catch(e){/* sandboxed preview — safe to ignore */}
+  });
+</script>
